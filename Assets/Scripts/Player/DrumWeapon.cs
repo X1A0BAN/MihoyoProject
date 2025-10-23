@@ -14,7 +14,7 @@ namespace EchoSphere.Player
         public ParticleSystem perfectFx;
 
         [Header("风琴充能")]
-        public OrganWeapon organ;           // 拖引用
+        //public OrganWeapon organ;           // 拖引用
         public int perfectStreakForCharge = 3;
 
         int _perfectStreak;
@@ -41,11 +41,11 @@ namespace EchoSphere.Player
                 {
                     _perfectStreak++;
                     if (perfectFx) Instantiate(perfectFx, ai.transform.position, Quaternion.identity);
-                    if (_perfectStreak >= perfectStreakForCharge && organ)
+                    /*if (_perfectStreak >= perfectStreakForCharge && organ)
                     {
                         organ.AddCharge(1);       // 给风琴充能1格
                         _perfectStreak = 0;
-                    }
+                    }*/
                 }
                 else _perfectStreak = 0;
             }
