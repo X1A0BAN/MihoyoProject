@@ -25,8 +25,9 @@ namespace EchoSphere.Player
         public LayerMask enemyMask;          // 指定“敌人”Layer
         public float drumCooldown = 0.35f;
         public int drumDamage = 1;
-        public AudioSource drumSfx;          // 鼓击音效
-        public ParticleSystem drumHitFx;     // 鼓击命中特效
+        public AudioSource drumSfx;          // 鼓击音效（可空）
+        public ParticleSystem drumHitFx;     // 鼓击命中特效（可空，实例化在敌人处）
+
         [Header("== Organ (Ranged) ==")]
         public MusicNoteProjectile notePrefab;  // 拖预制
         public Transform noteSpawn;             // 子弹出生点（相机前/角色手部）
@@ -70,7 +71,7 @@ namespace EchoSphere.Player
             Vector3 input = new Vector3(h, 0, v);
             input = Vector3.ClampMagnitude(input, 1f);
 
-            // 面朝摄像机方向移动
+            // 面朝摄像机方向移动（第三人称常用）
             Vector3 camForward = cameraPivot ? Vector3.Scale(cameraPivot.forward, new Vector3(1, 0, 1)).normalized : transform.forward;
             Vector3 camRight = cameraPivot ? cameraPivot.right : transform.right;
             camRight.y = 0; camRight.Normalize();
@@ -133,10 +134,14 @@ namespace EchoSphere.Player
             foreach (var hit in hits)
             {
                 var monster = hit.GetComponent<Enemies.NoiseMonster>();
+                Debug.Log("aaa");
                 if (monster != null)
                 {
                     if (drumHitFx) Instantiate(drumHitFx, hit.transform.position, Quaternion.identity);
-                    monster.TakeDamage(drumDamage);
+                    {
+                        Debug.Log("aaa");
+                        monster.TakeDamage(drumDamage);
+                    }
                     if (monster.IsDead)
                     {
                         killedAny = true;
@@ -145,13 +150,14 @@ namespace EchoSphere.Player
                 }
                 else
                 {
-                    // （兜底）
+                    // 没有示例脚本也照样销毁（兜底）
                     Destroy(hit.gameObject);
                     killedAny = true;
                     if (addLayerOnHit && musicManager) musicManager.AddNextLayer();
                 }
             }
-            
+
+            // 可视化调试
             DebugDrawSphere(center, drumRadius, killedAny ? Color.yellow : Color.white, 0.25f);
 
             yield return new WaitForSeconds(drumCooldown);
